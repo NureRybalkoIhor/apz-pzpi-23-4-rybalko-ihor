@@ -1,0 +1,55 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.13.35825.156
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FoodPreOrder.Domain", "FoodPreOrder.Domain\FoodPreOrder.Domain.csproj", "{81900285-4EC0-4B2D-BC42-622DE1BAB5A6}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FoodPreOrder.Application", "FoodPreOrder.Application\FoodPreOrder.Application.csproj", "{69ADA52B-756E-4C6C-BC99-DE55D520A861}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FoodPreOrder.Persistence", "FoodPreOrder.Persistence\FoodPreOrder.Persistence.csproj", "{69B423A8-BFBA-45A3-A00B-0428F4DE8843}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FoodPreOrder.Infrastructure", "FoodPreOrder.Infrastructure\FoodPreOrder.Infrastructure.csproj", "{0EF89A7B-69A7-4BB6-ABD1-87BF81323A0B}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FoodPreOrder.Api", "FoodPreOrder.Api\FoodPreOrder.Api.csproj", "{15D04B9F-8FB5-4B1F-B5FC-DFA574A6D354}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FoodPreOrder.Tests", "FoodPreOrder.Tests\FoodPreOrder.Tests.csproj", "{6057C7D6-FE9A-491E-95A1-5922FBC232A5}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{81900285-4EC0-4B2D-BC42-622DE1BAB5A6}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{81900285-4EC0-4B2D-BC42-622DE1BAB5A6}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{81900285-4EC0-4B2D-BC42-622DE1BAB5A6}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{81900285-4EC0-4B2D-BC42-622DE1BAB5A6}.Release|Any CPU.Build.0 = Release|Any CPU
+		{69ADA52B-756E-4C6C-BC99-DE55D520A861}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{69ADA52B-756E-4C6C-BC99-DE55D520A861}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{69ADA52B-756E-4C6C-BC99-DE55D520A861}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{69ADA52B-756E-4C6C-BC99-DE55D520A861}.Release|Any CPU.Build.0 = Release|Any CPU
+		{69B423A8-BFBA-45A3-A00B-0428F4DE8843}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{69B423A8-BFBA-45A3-A00B-0428F4DE8843}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{69B423A8-BFBA-45A3-A00B-0428F4DE8843}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{69B423A8-BFBA-45A3-A00B-0428F4DE8843}.Release|Any CPU.Build.0 = Release|Any CPU
+		{0EF89A7B-69A7-4BB6-ABD1-87BF81323A0B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{0EF89A7B-69A7-4BB6-ABD1-87BF81323A0B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{0EF89A7B-69A7-4BB6-ABD1-87BF81323A0B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{0EF89A7B-69A7-4BB6-ABD1-87BF81323A0B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{15D04B9F-8FB5-4B1F-B5FC-DFA574A6D354}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{15D04B9F-8FB5-4B1F-B5FC-DFA574A6D354}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{15D04B9F-8FB5-4B1F-B5FC-DFA574A6D354}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{15D04B9F-8FB5-4B1F-B5FC-DFA574A6D354}.Release|Any CPU.Build.0 = Release|Any CPU
+		{6057C7D6-FE9A-491E-95A1-5922FBC232A5}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{6057C7D6-FE9A-491E-95A1-5922FBC232A5}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{6057C7D6-FE9A-491E-95A1-5922FBC232A5}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{6057C7D6-FE9A-491E-95A1-5922FBC232A5}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {108E28B0-42E4-433D-A288-CB6407587A04}
+	EndGlobalSection
+EndGlobal

@@ -1,0 +1,41 @@
+# ==========================================
+# GitIgnore for Lab 5 (Multi-Project Layout)
+# ==========================================
+
+# --- OS temporary files ---
+.DS_Store
+Thumbs.db
+
+# --- Logs ---
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# --- C# / .NET (Backend) ---
+[Db]in/
+[Oo]bj/
+[Rr]elease/
+[Dd]ebug/
+.vs/
+*.user
+*.suo
+*.userosscache
+*.sln.docstates
+
+# --- Kotlin / Android (Mobile) ---
+.gradle/
+.idea/
+.kotlin/
+build/
+app/build/
+local.properties
+*.iml
+
+# --- React / Vite (Frontend) ---
+node_modules/
+dist/
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
