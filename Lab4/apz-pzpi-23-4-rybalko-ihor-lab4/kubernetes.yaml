@@ -1,0 +1,141 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: foodpreorder-config
+  namespace: default
+data:
+  ConnectionStrings__DefaultConnection: "Server=foodpreorder-db-service,1433;Database=FoodPreOrderDB;User Id=sa;Password=YourStrong@Pass123;TrustServerCertificate=True;MultipleActiveResultSets=true;Max Pool Size=100"
+  Jwt__Key: "G2453bhsdfkYGhasdr5asjjiksdfni12babsdjiajkkaloksdluwkasnhh6126bd"
+  ASPNETCORE_HTTP_PORTS: "80"
+  ASPNETCORE_ENVIRONMENT: "Production"
+
+---
+# Persistent Volume Claim for MS SQL Server
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: mssql-pvc
+  namespace: default
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 5Gi
+
+---
+# Deployment for MS SQL Server Database
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: foodpreorder-db
+  namespace: default
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: foodpreorder-db
+  template:
+    metadata:
+      labels:
+        app: foodpreorder-db
+    spec:
+      containers:
+      - name: mssql
+        image: mcr.microsoft.com/mssql/server:2022-latest
+        ports:
+        - containerPort: 1433
+        env:
+        - name: ACCEPT_EULA
+          value: "Y"
+        - name: MSSQL_SA_PASSWORD
+          value: "YourStrong@Pass123"
+        resources:
+          limits:
+            cpu: "2.0"
+            memory: 2Gi
+          requests:
+            cpu: "0.5"
+            memory: 1Gi
+        volumeMounts:
+        - name: mssql-storage
+          mountPath: /var/opt/mssql
+      volumes:
+      - name: mssql-storage
+        emptyDir: {}
+
+---
+# Service for Database access
+apiVersion: v1
+kind: Service
+metadata:
+  name: foodpreorder-db-service
+  namespace: default
+spec:
+  ports:
+  - port: 1433
+    targetPort: 1433
+    nodePort: 31433
+  selector:
+    app: foodpreorder-db
+  type: NodePort
+
+---
+# Deployment for API Backend Servers
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: foodpreorder-api
+  namespace: default
+spec:
+  replicas: 10
+  selector:
+    matchLabels:
+      app: foodpreorder-api
+  template:
+    metadata:
+      labels:
+        app: foodpreorder-api
+    spec:
+      containers:
+      - name: api
+        image: foodpreorder-api:latest
+        imagePullPolicy: IfNotPresent
+        ports:
+        - containerPort: 80
+        envFrom:
+        - configMapRef:
+            name: foodpreorder-config
+        resources:
+          limits:
+            cpu: "1"
+            memory: "1024Mi"
+          requests:
+            cpu: "0.25"
+            memory: "256Mi"
+        livenessProbe:
+          tcpSocket:
+            port: 80
+          initialDelaySeconds: 15
+          periodSeconds: 10
+        readinessProbe:
+          tcpSocket:
+            port: 80
+          initialDelaySeconds: 10
+          periodSeconds: 5
+
+---
+# Service to Load-Balance traffic across Pods
+apiVersion: v1
+kind: Service
+metadata:
+  name: foodpreorder-api-service
+  namespace: default
+spec:
+  ports:
+  - port: 80
+    targetPort: 80
+    nodePort: 30082
+  selector:
+    app: foodpreorder-api
+  type: NodePort
