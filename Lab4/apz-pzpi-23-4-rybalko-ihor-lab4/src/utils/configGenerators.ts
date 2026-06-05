@@ -9,10 +9,6 @@ export interface ScalingParams {
   dbConnectionPool: number;
   dbReplicas: number;
   dbStorage: number; // in GB
-  concurrentUsers: number;
-  spawnRate: number; // VUs per second
-  testDuration: number; // in seconds
-  loadProfile: 'constant' | 'ramp-up' | 'spike';
   endpoints: string[];
 }
 
@@ -200,10 +196,10 @@ spec:
         resources:
           limits:
             cpu: "2.0"
-            memory: 2Gi
+            memory: 4Gi
           requests:
             cpu: "0.5"
-            memory: 1Gi
+            memory: 2Gi
         volumeMounts:
         - name: mssql-storage
           mountPath: /var/opt/mssql
@@ -289,78 +285,6 @@ spec:
 ${hpaYaml}`;
 };
 
-export const generateK6Script = (params: ScalingParams): string => {
-  const rampUpTime = Math.max(10, Math.floor(params.testDuration * 0.2));
-  const steadyTime = Math.max(10, Math.floor(params.testDuration * 0.6));
-  const rampDownTime = Math.max(10, Math.floor(params.testDuration * 0.2));
-
-  let stagesCode = '';
-  if (params.loadProfile === 'constant') {
-    stagesCode = `stages: [
-    { duration: '10s', target: ${params.concurrentUsers} }, // quick ramp-up
-    { duration: '${params.testDuration}s', target: ${params.concurrentUsers} }, // steady load
-    { duration: '10s', target: 0 }, // cool down
-  ],`;
-  } else if (params.loadProfile === 'ramp-up') {
-    stagesCode = `stages: [
-    { duration: '${rampUpTime}s', target: ${Math.floor(params.concurrentUsers * 0.3)} },
-    { duration: '${rampUpTime}s', target: ${params.concurrentUsers} }, // target load
-    { duration: '${steadyTime}s', target: ${params.concurrentUsers} }, // hold
-    { duration: '${rampDownTime}s', target: 0 }, // cool down
-  ],`;
-  } else {
-    // Spike profile
-    stagesCode = `stages: [
-    { duration: '10s', target: ${Math.floor(params.concurrentUsers * 0.1)} },
-    { duration: '15s', target: ${params.concurrentUsers} }, // sudden spike!
-    { duration: '40s', target: ${params.concurrentUsers} },
-    { duration: '10s', target: ${Math.floor(params.concurrentUsers * 0.1)} }, // quick drop
-    { duration: '20s', target: 0 },
-  ],`;
-  }
-
-  const endpointRequests = params.endpoints.map(ep => {
-    let method = 'GET';
-    let body = 'null';
-    let label = ep;
-
-    if (ep === '/api/auth/login') {
-      method = 'POST';
-      body = 'JSON.stringify({ email: "admin@foodpreorder.com", password: "Password123" })';
-    }
-
-    return `  // Request to ${ep}
-  let res_${ep.replace(/\//g, '_')} = http.request('${method}', \`\${BASE_URL}${ep}\`, ${body}, {
-    headers: { 'Content-Type': 'application/json' },
-    tags: { name: '${label}' }
-  });
-  check(res_${ep.replace(/\//g, '_')}, {
-    '${ep} status is 200': (r) => r.status === 200,
-    '${ep} response time < 500ms': (r) => r.timings.duration < 500,
-  });
-  sleep(Math.random() * 2 + 1); // think time of 1-3 seconds
-`;
-  }).join('\n');
-
-  return `import http from 'k6/http';
-import { check, sleep } from 'k6';
-
-export let options = {
-  ${stagesCode}
-  thresholds: {
-    http_req_failed: ['rate<0.01'], // less than 1% errors
-    http_req_duration: ['p(95)<500'], // 95% of requests must complete under 500ms
-  },
-};
-
-const BASE_URL = __ENV.TARGET_URL || 'http://localhost:5082';
-
-export default function () {
-${endpointRequests}
-}
-`;
-};
-
 export const generateLocustFile = (params: ScalingParams): string => {
   const taskDefinitions = params.endpoints.map((ep, idx) => {
     let taskName = ep.replace(/\/api\//, '').replace(/\//g, '_');
@@ -393,7 +317,7 @@ ${taskDefinitions}
 # To run this locust test locally:
 # 1. Install Locust: pip install locust
 # 2. Run Locust command: locust -f locustfile.py
-# 3. Open browser at http://localhost:8089 and set Host to http://localhost:5082
-# 4. Set Users = ${params.concurrentUsers}, Spawn Rate = ${params.spawnRate}
+# 3. Open browser at http://localhost:8089
+# 4. Set Host (e.g. http://localhost:30082 for K8s or http://localhost:5082 for Docker), Users, and Spawn Rate in the Locust Web UI.
 `;
 };

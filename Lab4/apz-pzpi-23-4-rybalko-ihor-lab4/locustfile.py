@@ -30,5 +30,5 @@ class FoodPreOrderLoadTester(HttpUser):
 # To run this locust test locally:
 # 1. Install Locust: pip install locust
 # 2. Run Locust command: locust -f locustfile.py
-# 3. Open browser at http://localhost:8089 and set Host to http://localhost:5082
-# 4. Set Users = 1060, Spawn Rate = 23
+# 3. Open browser at http://localhost:8089
+# 4. Set Host (e.g. http://localhost:30082 for K8s or http://localhost:5082 for Docker), Users, and Spawn Rate in the Locust Web UI.

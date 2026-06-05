@@ -16,17 +16,9 @@ export const ScalingTab: React.FC = () => {
   const [backendReplicas, setBackendReplicas] = useState(3);
   const [cpuLimit, setCpuLimit] = useState(1.0);
   const [memoryLimit, setMemoryLimit] = useState(512);
-  const [hpaEnabled, setHpaEnabled] = useState(false);
-  const [hpaMinReplicas, setHpaMinReplicas] = useState(2);
-  const [hpaMaxReplicas, setHpaMaxReplicas] = useState(10);
-  const [hpaTargetCpu, setHpaTargetCpu] = useState(70);
   const [dbConnectionPool, setDbConnectionPool] = useState(100);
   const [dbReplicas] = useState(1);
   const [dbStorage, setDbStorage] = useState(20);
-  const [concurrentUsers, setConcurrentUsers] = useState(100);
-  const [spawnRate, setSpawnRate] = useState(10);
-  const [testDuration, setTestDuration] = useState(120);
-  const [loadProfile, setLoadProfile] = useState<'constant' | 'ramp-up' | 'spike'>('constant');
   const [selectedEndpoints, setSelectedEndpoints] = useState<string[]>([
     '/api/restaurants',
     '/api/dishes',
@@ -39,17 +31,13 @@ export const ScalingTab: React.FC = () => {
     backendReplicas,
     cpuLimit,
     memoryLimit,
-    hpaEnabled,
-    hpaMinReplicas,
-    hpaMaxReplicas,
-    hpaTargetCpu,
+    hpaEnabled: false,
+    hpaMinReplicas: 2,
+    hpaMaxReplicas: 10,
+    hpaTargetCpu: 70,
     dbConnectionPool,
     dbReplicas,
     dbStorage,
-    concurrentUsers,
-    spawnRate,
-    testDuration,
-    loadProfile,
     endpoints: selectedEndpoints,
   };
 
@@ -176,77 +164,7 @@ export const ScalingTab: React.FC = () => {
             </div>
           </div>
 
-          {/* Section 2: Autoscaling (HPA) */}
-          <div className="card">
-            <div className="flex items-center justify-between mb-4" style={{ borderBottom: '1px solid var(--border-color)', paddingBottom: '0.5rem' }}>
-              <h3 style={{ fontSize: '1rem', margin: 0 }}>📈 {t('autoscaling_enabled')}</h3>
-              <label className="switch-container" style={{ display: 'inline-flex', alignItems: 'center', cursor: 'pointer' }}>
-                <input
-                  type="checkbox"
-                  checked={hpaEnabled}
-                  onChange={(e) => setHpaEnabled(e.target.checked)}
-                  style={{ width: '1.5rem', height: '1.5rem', accentColor: 'var(--accent-primary)', cursor: 'pointer' }}
-                />
-              </label>
-            </div>
 
-            {hpaEnabled && (
-              <div className="flex flex-col gap-4">
-                <div className="input-group">
-                  <div className="flex justify-between items-center mb-1">
-                    <label className="input-label" style={{ marginBottom: 0 }}>{t('min_replicas')}</label>
-                    <span style={{ fontWeight: 700, color: 'var(--accent-primary)', fontSize: '0.875rem' }}>{hpaMinReplicas}</span>
-                  </div>
-                  <input
-                    type="range"
-                    min="1"
-                    max="10"
-                    className="input-field"
-                    style={{ padding: 0, height: '6px', accentColor: 'var(--accent-primary)' }}
-                    value={hpaMinReplicas}
-                    onChange={(e) => {
-                      const val = Number(e.target.value);
-                      setHpaMinReplicas(val);
-                      if (hpaMaxReplicas < val) setHpaMaxReplicas(val);
-                    }}
-                  />
-                </div>
-
-                <div className="input-group">
-                  <div className="flex justify-between items-center mb-1">
-                    <label className="input-label" style={{ marginBottom: 0 }}>{t('max_replicas')}</label>
-                    <span style={{ fontWeight: 700, color: 'var(--accent-primary)', fontSize: '0.875rem' }}>{hpaMaxReplicas}</span>
-                  </div>
-                  <input
-                    type="range"
-                    min="2"
-                    max="30"
-                    className="input-field"
-                    style={{ padding: 0, height: '6px', accentColor: 'var(--accent-primary)' }}
-                    value={hpaMaxReplicas}
-                    onChange={(e) => setHpaMaxReplicas(Math.max(hpaMinReplicas, Number(e.target.value)))}
-                  />
-                </div>
-
-                <div className="input-group" style={{ marginBottom: 0 }}>
-                  <div className="flex justify-between items-center mb-1">
-                    <label className="input-label" style={{ marginBottom: 0 }}>{t('target_cpu')}</label>
-                    <span style={{ fontWeight: 700, color: 'var(--accent-primary)', fontSize: '0.875rem' }}>{hpaTargetCpu}%</span>
-                  </div>
-                  <input
-                    type="range"
-                    min="40"
-                    max="90"
-                    step="5"
-                    className="input-field"
-                    style={{ padding: 0, height: '6px', accentColor: 'var(--accent-primary)' }}
-                    value={hpaTargetCpu}
-                    onChange={(e) => setHpaTargetCpu(Number(e.target.value))}
-                  />
-                </div>
-              </div>
-            )}
-          </div>
 
           {/* Section 3: Database Settings */}
           <div className="card">
@@ -294,71 +212,6 @@ export const ScalingTab: React.FC = () => {
             <h3 className="mb-4" style={{ fontSize: '1rem', borderBottom: '1px solid var(--border-color)', paddingBottom: '0.5rem' }}>
               ⚡ {language === 'uk' ? 'Параметри симуляції навантаження' : 'Load Simulation Parameters'}
             </h3>
-
-            <div className="input-group">
-              <div className="flex justify-between items-center mb-1">
-                <label className="input-label" style={{ marginBottom: 0 }}>{t('concurrent_users')}</label>
-                <span style={{ fontWeight: 700, color: 'var(--accent-primary)', fontSize: '0.875rem' }}>{concurrentUsers} VUs</span>
-              </div>
-              <input
-                type="range"
-                min="10"
-                max="3000"
-                step="10"
-                className="input-field"
-                style={{ padding: 0, height: '6px', accentColor: 'var(--accent-primary)' }}
-                value={concurrentUsers}
-                onChange={(e) => setConcurrentUsers(Number(e.target.value))}
-              />
-            </div>
-
-            <div className="input-group">
-              <div className="flex justify-between items-center mb-1">
-                <label className="input-label" style={{ marginBottom: 0 }}>{t('spawn_rate')}</label>
-                <span style={{ fontWeight: 700, color: 'var(--accent-primary)', fontSize: '0.875rem' }}>{spawnRate} VUs/s</span>
-              </div>
-              <input
-                type="range"
-                min="1"
-                max="200"
-                className="input-field"
-                style={{ padding: 0, height: '6px', accentColor: 'var(--accent-primary)' }}
-                value={spawnRate}
-                onChange={(e) => setSpawnRate(Number(e.target.value))}
-              />
-            </div>
-
-            <div className="input-group">
-              <div className="flex justify-between items-center mb-1">
-                <label className="input-label" style={{ marginBottom: 0 }}>{t('test_duration')}</label>
-                <span style={{ fontWeight: 700, color: 'var(--accent-primary)', fontSize: '0.875rem' }}>
-                  {testDuration}s ({Math.floor(testDuration / 60)}m {testDuration % 60}s)
-                </span>
-              </div>
-              <input
-                type="range"
-                min="30"
-                max="1800"
-                step="30"
-                className="input-field"
-                style={{ padding: 0, height: '6px', accentColor: 'var(--accent-primary)' }}
-                value={testDuration}
-                onChange={(e) => setTestDuration(Number(e.target.value))}
-              />
-            </div>
-
-            <div className="input-group">
-              <label className="input-label">{t('load_profile')}</label>
-              <select
-                className="input-field"
-                value={loadProfile}
-                onChange={(e) => setLoadProfile(e.target.value as any)}
-              >
-                <option value="constant">Constant Load (Постійне навантаження)</option>
-                <option value="ramp-up">Ramp-Up / Ramp-Down (Планове зростання)</option>
-                <option value="spike">Spike Load (Різкий стрибок)</option>
-              </select>
-            </div>
 
             <div className="input-group" style={{ marginBottom: 0 }}>
               <label className="input-label">{t('target_endpoints')}</label>

@@ -4,7 +4,7 @@ metadata:
   name: foodpreorder-config
   namespace: default
 data:
-  ConnectionStrings__DefaultConnection: "Server=foodpreorder-db-service,1433;Database=FoodPreOrderDB;User Id=sa;Password=YourStrong@Pass123;TrustServerCertificate=True;MultipleActiveResultSets=true;Max Pool Size=100"
+  ConnectionStrings__DefaultConnection: "Server=foodpreorder-db-service,1433;Database=FoodPreOrderDB;User Id=sa;Password=YourStrong@Pass123;TrustServerCertificate=True;MultipleActiveResultSets=true;Max Pool Size=80"
   Jwt__Key: "G2453bhsdfkYGhasdr5asjjiksdfni12babsdjiajkkaloksdluwkasnhh6126bd"
   ASPNETCORE_HTTP_PORTS: "80"
   ASPNETCORE_ENVIRONMENT: "Production"
@@ -53,10 +53,10 @@ spec:
         resources:
           limits:
             cpu: "2.0"
-            memory: 2Gi
+            memory: 4Gi
           requests:
             cpu: "0.5"
-            memory: 1Gi
+            memory: 2Gi
         volumeMounts:
         - name: mssql-storage
           mountPath: /var/opt/mssql
@@ -88,7 +88,7 @@ metadata:
   name: foodpreorder-api
   namespace: default
 spec:
-  replicas: 10
+  replicas: 5
   selector:
     matchLabels:
       app: foodpreorder-api
@@ -108,10 +108,10 @@ spec:
             name: foodpreorder-config
         resources:
           limits:
-            cpu: "1"
+            cpu: "1.6"
             memory: "1024Mi"
           requests:
-            cpu: "0.25"
+            cpu: "0.4"
             memory: "256Mi"
         livenessProbe:
           tcpSocket:
